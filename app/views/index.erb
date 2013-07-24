@@ -1,4 +1,11 @@
 <div class="container">
-<a href="/login">LOGIN</a>
-  <p>Hello, world!</p>
+  <a href="/login">LOGIN</a>
+  <p>Hacker News</p>
+
+  <ul>
+    <% @posts = Post.all %>
+    <% @posts.each do |post| %>
+      <a href="/posts/<%= post.id %>"><li><%= post.title %></li></a><br>
+    <% end %>
+  </ul>
 </div>

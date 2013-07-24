@@ -7,22 +7,15 @@ class User < ActiveRecord::Base
 
   validates_uniqueness_of :name
 
-  def password
-    @password ||= BCrypt::Password.new(password_hash)
+  def self.create_login(name, password)
+    my_password = BCrypt::Password.create(password)
+    User.create(name: name, password_hash: my_password)
   end
 
-  def password=(new_password)
-    @password = BCrypt::Password.create(new_password)
-    self.password_hash = @password
-  end
-
-  def self.authenticate(name, password)
-    user = self.find_by_name(name)
-    if user && user.password == password
-      user
-    else
-      nil
-    end
+  def self.validate_login(name, password_input)
+    @user = User.find_by_name(name)
+    password_encrypted = BCrypt::Password.new(@user.password_hash)
+    password_encrypted == password_input
   end
 
 end

@@ -3,7 +3,7 @@ get '/' do
   erb :index
 end
 
-get '/post' do
+get '/posts/:id' do
 
   erb :post
 end
@@ -14,16 +14,17 @@ get '/comments' do
 end
 
 get '/submit' do
-  # if session[:active] == true
-  #   erb :submit
-  # else
-  #   erb :signup
-  # end
-  erb :create_post
+  if session[:user_id]
+    erb :create_post
+  else
+    erb :signup
+  end
 end
 
 post '/submit' do
-  p params
+
+  current_user.posts.create(params[:post])
+
 end
 
 ################################################################################
@@ -44,20 +45,24 @@ get '/signup' do
 end
 
 post '/login' do
-  @user = User.authenticate(params[:user][:name], params[:user][:password])
+  if User.validate_login(params[:name], params[:password])
+    @user = User.find_by_name(params[:name])
 
+    session[:user_id] = @user.id
+    redirect "/users/#{@user.id}"
+  else
+    redirect '/login'
+  end
 end
 
 post '/signup' do
-  @user = User.create(name: params[:name], password_hash: params[:password])
-  session[:id] = @user.id
-  session[:user] = @user
+  # @user = User.create(name: params[:name], password_hash: params[:password])
+  @user = User.create_login(params[:name], params[:password])
 
-  p params[:name]
-  p params[:password]
-
+  session.clear
+  
+  session[:user_id] = @user.id
   redirect "/users/#{@user.id}"
-p params
 end
 
 

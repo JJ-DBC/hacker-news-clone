@@ -1,2 +1,2 @@
-<% @user = session[:user] %>
+<% @user = User.find(session[:user_id]) %>
 <%= @user.name %>
